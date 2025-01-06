@@ -1,4 +1,4 @@
-- hosts : "ubuntu"
+- hosts : "tur-node1"
   become: yes
   tasks:
     - name: apt
