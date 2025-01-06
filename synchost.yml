@@ -1,0 +1,68 @@
+---
+- hosts: home, pxe
+  tasks:
+
+  - name: Print the address for each host when defined
+    ansible.builtin.debug:
+       msg: System {{ inventory_hostname }} has IP address {{ ansible_default_ipv4.address }}
+    when: ansible_default_ipv4.address is defined
+  - name: "check if debian generated hosts file has a backup"
+    stat: "path=/etc/hosts.debian"
+    tags: etc_hosts
+    register: etc_hosts_debian
+
+  - name: "backup debian generated /etc/hosts"
+    command: "cp /etc/hosts /etc/hosts.debian"
+    when: etc_hosts_debian.stat.islnk is not defined
+    tags: etc_hosts
+    become: true
+
+  - name: "install /etc/hosts.ansible file"
+    command: "cp /etc/hosts /tmp/hosts.ansible"
+    tags: etc_hosts
+    become: true
+
+  - name: Delete old /etc/hosts entries
+    ansible.builtin.replace:
+       path: /tmp/hosts.ansible
+       after: '# CASADODOM  domain'
+       regexp: '^(.+)$'
+       replace: ''
+    become: true
+    register: casadodom
+
+  - name: Remove blank lines between matches
+    ansible.builtin.replace:
+       path: /tmp/hosts.ansible
+       after: '# CASADODOM'
+       regexp: '(^\n)'
+       replace: ''
+    become: true
+    when: casadodom.changed 
+
+  - name: "Copy the host master file into the remote location"
+    ansible.builtin.copy:
+       src: /nfs/hosts
+       dest: /tmp/hosts.master
+       owner: root
+       group: root
+       mode: '0644'
+    become: true
+    when: casadodom.changed 
+
+  - name: Add /nfs/hosts the master, block from a file
+    ansible.builtin.blockinfile: 
+       path: /tmp/hosts.ansible 
+       block: "{{lookup('file', '/tmp/hosts.master')}}" 
+       create: yes 
+       state: present
+       backup: yes
+    become: true
+    when: casadodom.changed 
+
+  - name: "install /etc/hosts file"
+    command: "cp /tmp/hosts.ansible /etc/hosts"
+    tags: etc_hosts
+    become: true
+    when: casadodom.changed 
+

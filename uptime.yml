@@ -1,0 +1,10 @@
+---
+- name: Get server uptime
+  hosts: home, localhost
+
+  tasks:
+  - name: Get uptime first
+    shell: uptime
+    register: hello
+  - debug: msg="{{ hello.stdout }}"
+

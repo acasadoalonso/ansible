@@ -1,0 +1,15 @@
+---
+- hosts: home, localhost, pxe, FAI
+  tasks:
+  - name: Touch to set the CONTROL FILE
+    shell: "touch ~/CONTROL_"
+    args:
+       #warn: no # set warn=false to prevent warning
+  - name: delete the previous CONTROL files
+    shell: "rm ~/CONTROL_*"
+    args:
+       #warn: no # set warn=false to prevent warning
+  - name: Touch to set the CONTROL FILE
+    shell: "touch ~/CONTROL_$(date -Iseconds)"
+    args:
+       #warn: no # set warn=false to prevent warning

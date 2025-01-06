@@ -1,0 +1,10 @@
+---
+- hosts: casadonfs, casadonewnfs
+  tasks:
+  - name: Replace a my.cnf to be accesible by external
+    ansible.builtin.replace:
+       path: /etc/my.cnf
+       regexp: 'bind-address=127\.0\.0\.1'
+       replace: bind-address=0.0.0.0 
+  - name: Execute a restart of MariaDB
+    shell: "python3 /usr/bin/mysql_reset.py --reboot"

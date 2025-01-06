@@ -1,0 +1,40 @@
+---
+- hosts: home
+  tasks:
+
+  - name: Print the address for each host when defined
+    ansible.builtin.debug:
+       msg: System {{ inventory_hostname }} has IP address {{ ansible_default_ipv4.address }}
+    when: ansible_default_ipv4.address is defined
+
+  - name: Check if is a candidate
+    ansible.builtin.replace:
+       path: /tmp/hosts.ansible
+       after: '# CASADODOM  domain'
+       regexp: '^(.+)$'
+       replace: ''
+    become: true
+    register: casadodom
+
+
+  - name: "Copy the bkup snippet"
+    ansible.builtin.copy:
+       src:  /nfs/snippets/bkup.sh
+       dest: /tmp/bkup.sh
+       owner: root
+       group: root
+       force: yes
+       mode: '0777'
+    become: true
+
+  - name: Create a directory /bkups if it does not exist
+    ansible.builtin.file:
+      path: /bkups
+      state: directory
+      mode: '0777'
+    become: true
+ 
+  - name: Execute the command bkup
+    command: bash /tmp/bkup.sh >> /tmp/bkup.log
+    become: false
+

@@ -1,0 +1,6 @@
+---
+roles:
+# from GitHub, overriding the name and specifying a specific tag
+  - name: acasadoalonso.docker
+    src: https://github.com/acasadoalonso/ansible-role-docker
+    version: master

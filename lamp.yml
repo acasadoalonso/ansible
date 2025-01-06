@@ -1,0 +1,8 @@
+---
+- hosts: ubuntu2
+  become: yes
+  roles:
+    - diodonfrost.mariadb
+    - geerlingguy.apache
+    - geerlingguy.php
+    - geerlingguy.php-mysql
