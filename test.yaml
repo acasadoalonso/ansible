@@ -1,4 +1,4 @@
-- hosts : "home"
+- hosts : "casadoubuntu"
   become: yes
   tasks:
     - name: apt
