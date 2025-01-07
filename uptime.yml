@@ -2,10 +2,11 @@
 - name: Get server uptime
   hosts: home, localhost
 
+  ignore_unreachable: true
+
   tasks:
   - name: Get uptime first
     shell: uptime
-    ignore_unreachable: true
     ignore_errors: true
     register: hello
   - debug: msg="{{ hello.stdout }}"
