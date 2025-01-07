@@ -7,5 +7,5 @@
     shell: uptime
     ignore_errors: true
     register: hello
-  - debug: msg="{{ hello.stdout }}"
+#  - debug: msg="{{ hello.stdout }}"
 
